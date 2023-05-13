@@ -1,0 +1,92 @@
+
+#list all the available namespace.
+kubectl get namespaces 
+kubectl get ns
+
+#get a particular namespace whose name is specified in the command
+kubectl get namespace <Namespace name> 
+kubectl describe namespace <Namespace name>
+
+#delete a namespace
+kubectl delete namespace <Namespace name>
+
+#list all the kubernetes resources of all namespaces
+kubectl get all // all the resources of default namespace
+kubectl get all -n <namespace-name-here>
+kubectl get all --all-namespaces (or) kubectl get all -A 
+
+# provides the api version of the namespace
+kubectl api-resources | grep namespace 
+Output : <Kind> <Shortname> <version>
+
+#Create pods in a namespace through command line
+kubectl run nginx --image=nginx --namespace=<insert-namespace-name-here>
+kubectl get pods --namespace=<insert-namespace-name-here>
+
+
+#permanently save the namespace for all subsequent kubectl commands
+kubectl config set-context --current --namespace=<insert-namespace-name-here>
+# Validate it
+kubectl config view --minify | grep namespace:
+
+
+=================Create namespace imperative===============================
+kubectl create namespace <namespace-name>
+kubectl create namespace test
+
+=================Create namespace declarative===============================
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: dev
+   labels:
+     name: dev
+
+(spec is optional for namespace)
+kubectl apply -f dev_namespace.yml
+
+=================================to create a pod=================
+vi pod.yml
+
+
+kind: Pod                              
+apiVersion: v1                     
+metadata:                           
+  name: testpod                  
+spec:                                    
+  containers:                      
+    - name: c00                     
+      image: ubuntu              
+      command: ["/bin/bash", "-c", "while true; do echo Hi; sleep 5 ; done"]
+
+kubectl apply -f pod.yml // pod will be created in default namespace
+ 
+kubectl apply -f pod.yml -n dev // pod will be created in dev namespace
+
+kubectl get pods // no result as it points to default namespace
+
+kubectl get pods -n dev
+
+kubectl delete -f pod.yml // it wont delete as it points to default namespace
+
+kubectl delete -f pod.yml -n dev  
+
+=======================to create a pod in particular namespace via yml =================
+kind: Pod                              
+apiVersion: v1                     
+metadata:                           
+  name: testpod 
+  namespace: dev
+spec:                                    
+  containers:                      
+    - name: c00                     
+      image: ubuntu              
+      command: ["/bin/bash", "-c", "while true; do echo Hi; sleep 5 ; done"]
+	  
+==============================================================================================
+
+# changing from default namespace to dev namespace
+$ kubectl config set-context $(kubectl config current-context) --namespace=dev 
+$ kubectl config view | grep namespace:
+$ kubectl get pods // points to dev namespace
+$ kubectl delete -f pod.yml

@@ -1,0 +1,129 @@
+===================== LIMIT AND REQUEST ==========================
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resources
+spec:
+  containers:
+  - name: resource
+    image: centos
+    command: ["/bin/bash", "-c", "while true; do echo Technical-Guftgu; sleep 5 ; done"]
+    resources:                                          
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+
+kubectl describe pod resources
+
+============RESOURCEQUOTA========================================
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+   name: myquota
+spec:
+  hard:
+    limits.cpu: "400m"
+    limits.memory: "400Mi"
+    requests.cpu: "200m"
+    requests.memory: "200Mi"
+	
+kubectl apply -f resourcequota.yml // resourcequota gets created for namespace dev
+
+===========================================================
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: deployments
+spec:
+  replicas: 3
+  selector:      
+    matchLabels:
+     objtype: deployment
+  template:
+    metadata:
+      name: testpod8
+      labels:
+        objtype: deployment
+    spec:
+     containers:
+       - name: c00
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo Technical-Guftgu; sleep 5 ; done"]
+         resources:
+            requests:
+              cpu: "200m"
+
+kubectl apply -f poddeploy.yml 
+kubectl get pods // pods will not be created because total quota allocated for namespace is 400m(limit.cpu), but each container needs 200m (request.cpu), 3 containers need 600m
+kubectl get rs
+kubectl describe rs <replicaset name> // shows the reason for failure
+
+kubectl get deploy 
+========================= LIMIT RANGE ===================================
+cpudefault.yml
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-limit-range
+spec:
+  limits:
+  - default:
+      cpu: 1
+    defaultRequest:
+      cpu: 0.5
+    type: Container
+====================================================================
+testpod.yml
+
+kind: Pod                              
+apiVersion: v1                     
+metadata:                           
+  name: testpod                  
+spec:                                    
+  containers:                      
+    - name: c00                     
+      image: ubuntu              
+      command: ["/bin/bash", "-c", "while true; do echo Technical Guftgu; sleep 5 ; done"]
+
+kubectl apply -f cpudefault.yml
+kubectl apply -f testpod.yml
+kubectl describe pod testpod // can know the deafult limit and request assigned to container
+==============cpu2.yml======================================
+apiVersion: v1
+kind: Pod
+metadata:
+  name: default-cpu-demo-2
+spec:
+  containers:
+  - name: default-cpu-demo-2-ctr
+    image: nginx
+    resources:
+      limits:
+        cpu: "1"
+
+kubectl apply -f cpu2.yml
+kubectl get pods
+kubectl describe pod default-cpu-demo-2 // the request will be equal to the limit
+kubectl delete -f cpu2.yml
+=================================================================================================
+apiVersion: v1
+kind: Pod
+metadata:
+  name: default-cpu-demo-3
+spec:
+  containers:
+  - name: default-cpu-demo-3-ctr
+    image: nginx
+    resources:
+      requests:
+        cpu: "0.75"
+
+kubectl apply -f cpu3.yml
+kubectl get pods
+kubectl describe pod default-cpu-demo-3 // the limit will be default 1
+kubectl delete -f cpu3.yml

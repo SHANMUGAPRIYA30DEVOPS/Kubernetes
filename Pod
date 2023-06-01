@@ -1,0 +1,27 @@
+POD WITH PORTS
+
+vi pod4.yml
+--------------
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod4
+  labels:
+    app: httpdapp
+spec:
+  containers:
+    - name: c00
+      image: httpd
+      ports:
+       - containerPort: 80  
+
+kubectl apply -f pod4.yml
+
+kubectl get pods
+
+kubectl get pods -o wide
+
+curl <pod-ip>:80
+
+kubectl delete -f pod4.yml

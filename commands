@@ -1,0 +1,856 @@
+cat ~/.bash_history -> displays the history of commands without line number
+
+uptime
+uptime -p -> pretty format on system last boot, days, hours
+uptime -s -> date and time of system last boot
+
+
+chmod u=rw sai.txt
+chmod +x sai.txt
+chmod g+wx sai.txt
+chmod -r sai.txt
+chmod o-rwx sai.txt
+chmod ug+rw sai.txt
+chmod uo=r sai.txt
+chmod u=rw,o=r sai.txt
+chmod 661 sai.txt
+
+To search for a particular file / availability of file in linux
+-----------------
+
+find . -name filename -> shows both files and directories
+find . -type d/f -name filename -> search for specific file/directories
+
+How to search a file based on their size?
+find /path/ -size 50M
+M MB, k KB, G GB, c bytes
+
+How to find only file or directory in a given path?
+find /path/ -type d
+d directory
+l symbolic link
+f file
+b block device
+
+How to search a file based on it's name?
+find /path/ -name fn
+
+How to ignore upper & lower case in file name while searching?
+find /path/ -iname fn
+
+How to search files for a given user only?
+find /path/ -user root
+
+How to search a file based on the inode no.? (to search for hard links, where the files will be shared)
+find /path/ -inum <inode no. of file>
+
+How to search a file based on the no. of links?
+find /path/ -links <no of links>
+
+How to search a file based on their permissions?
+find /path/ -perm 777
+find /path/ -perm /u=r
+find /path/to/search -perm -u=rw
+
+
+How to search all the files which start with letter a?
+find /path/ -iname "a*"
+find /path/to/directory -iname "a*.txt"
+
+
+How to search all the files which are created after last.txt file?
+find /path/ -newer last.txt
+
+How to search all the empty files in a given directory? (imp)
+find /path/ -empty
+
+How to search all the empty files and delete them? (imp)
+find /path/ -empty -exec rm {} \;
+
+How to search all the files whose size are between 1-50 MB
+find /path/ -size +1M -size -50M
+
+How to search for 15 days old file? (24*15)
+find /path/ -mtime 15
+
+How can you exclude specific directories from a find command search?
+find /path/to/search -name "filename" -path "./dir_to_exclude" -prune -o -print
+
+How to find largest file in given directory?
+find,du,ls
+
+find . -maxdepth 1 -type f -exec ls -lh {} \; | sort -k5rn | head -1 | awk '{print $NF}' | awk -F/ '{print $NF}'
+
+k5 5th col r reverse n numeric (instead of n -> h sort according to size)
+
+du -sh * | sort -rh | head -3
+
+ls -lSh | head -1
+S Sorting h human readable (k,m)
+
+
+locate fn
+locate apache -n 20 -> Limit the output to a specific number
+
+locate -c fn -> counts the no of file occurance
+locate -c “*apache*.”
+
+locate  -c “*.txt*” -> Display certain file types
+
+locate  -i “*bradley*.” -> Ignore case sensitivity
+
+locate -S -> This prints out the number of files and directories indexed by the database
+
+
+
+
+
+System performance/System monitoring commands
+
+df
+df -h -> human readable way
+df -h -BK -> Kilo bytes
+df -g -GK -> Giga bytes
+df /home/mandeep/test/test.cpp -> specify particular file, then it will show mount information of that particular file.
+
+du
+du -h
+du -h /home/priya/scripts/ -> disk usage/ size of folders within the specified path
+du -ah /home/priya/scripts/ -> List all files and directories size
+du -ahc /home/priya/scripts/ -> shows the total volume
+du -ahc -BK /home/priya/scripts/ -> shows in Kilo bytes
+
+free
+free -h
+free -s N -> Keep refreshing memory after N sec
+free -c N -> Exit after repeating N times
+
+
+ping www.google.com
+ping hostname
+ping ip
+ping url
+ping -c 3 host --> controlling no of ping/packets, sends 3 times only
+ping -i 2 host --> change interval to send packets (By default ping wait for 1 sec to send next packet)
+ping -c 5 -q host -->gives only summary of network
+ping -f host --> to send packets as fast as possible to test n/w performace
+ping -s 500 host -->change size of data packet, big data more size (Earlier a default sized packets were sent to a host but we can send light and heavy packet)
+ping -w 10 host --> stop pinging after 10 sec, timeout
+ping -D host --> prints timestamp to remember the time
+ping -a host --> audible
+
+netstat
+netstat -altnp
+
+
+awk
+https://www.geeksforgeeks.org/awk-command-unixlinux-examples/
+https://www.javatpoint.com/linux-awk-command
+Awk is a scripting language used for manipulating data, text processing and generating reports.
+It acts as a filter in Linux. It is also referred as gawk (GNU awk) In Linux. 
+Awk is mostly used for pattern scanning and processing. 
+It searches one or more files to see if they contain lines that matches with the specified patterns and then perform the associated actions.
+Awk is abbreviated from the names of the developers – Aho, Weinberger, and Kernighan. 
+ --> Print the lines which match the given pattern.
+ --> Splitting a Line Into Fields
+
+
+echo data
+
+ID Name Salary Country
+1 Pol 25000 India
+2 Bont 45000 Belgium
+3 Loki 55000 Germany
+4 Hina 35000 India
+
+awk '{print $2}' data --> prints 2ns col, name
+awk '{print $NF}' data --> prints last col, Country
+ls -ltr | awk '{print $NF}' --> just displays the file name
+
+cat names
+
+ram
+sita
+sam
+div
+gat
+priya
+awk '{print NR $0}' names --> to add line numbers to file
+1ram
+2sita
+3sam
+4div
+5gat
+6priya
+
+awk '{print NR, $0}' names --> with space
+awk '{print NR ": " $0}' names --> with :
+
+$0 -> all the columns of that line
+
+cat country.txt
+id,name,age,country
+1,ab,5,india
+2,mn,8,us
+
+awk -F, '{print $4}' country.txt --> get column in csv file, -F is for field separated by ,
+
+awk '{if($3)>40000 print $0}' data--> conditional commands, to print sal if > 40k
+ID Name Salary Country
+2 Bont 45000 Belgium
+3 Loki 55000 Germany
+
+awk '{if($2=="Pol"){$3=80000} print $0}' data--> replace salary of Pol to 80k
+ID Name Salary Country
+1 Pol 80000 India
+2 Bont 45000 Belgium
+3 Loki 55000 Germany
+4 Hina 35000 India
+
+
+ awk '/India/ {print $0}' country.txt--> search for a word in file and replace that word in file, print entire line where India is there
+
+awk '{print NR "- " $0}' country.txt --> to add serial number
+
+awk 'NR=="8" {print $0}' country.txt --> print 8th line in a file
+
+awk 'NR=="8",NR=="10" {print $0}' country.txt --> print range of lines 8th line to 10th line in a file
+
+awk 'NF==0 {print NR}' data--> print line number that is blank
+
+awk 'END {print NR}' data--> total no. of line
+
+1- indicate from 1st byte to end byte of a line
+$ cut -b 1- state.txt
+Andhra Pradesh
+Arunachal Pradesh
+Assam
+Bihar
+Chhattisgarh
+
+-3 indicate from 1st byte to 3rd byte of a line
+$ cut -b -3 state.txt
+And
+Aru
+Ass
+Bih
+Chh
+
+cut -b 1,2,3 state.txt --> cut by bytes
+And
+Aru
+Ass
+Bih
+Chh
+
+<Tabs and backspaces are treated as a character, Tabs and backspaces are treated like as a character of 1 byte.>
+
+cut -c 2,5,7 state.txt
+nr
+rah
+sm
+ir
+hti
+
+cut -c1 names --> cut the first chararcter (c)
+r
+s
+s
+d
+g
+p
+
+cut -c1,5 names -> prints first and 5th char
+
+rd
+sf
+
+cut -c1-5 names -> prints first till 5th char, range
+
+rdfdd
+savgf
+
+cut -d "delimiter" -f (field number) file.txt
+cut -d " " -f 1 state.txt -->space is not default delimited, tab is default
+cut -d, -f 2 country.txt --> from csv file, d is delimiter, -f is field
+
+ab
+mn
+
+
+cut -d, -f 1- country.txt --output-delimiter=":"  --> in csv file, replace , with :
+
+ls -ltr | awk '{print $NF}' | cut -c 1,2 --> print first 2 chars in a file
+
+cut -d " " -f 1,2 state.txt --output-delimiter='%'
+Andhra%Pradesh
+Arunachal%Pradesh
+Assam
+Bihar
+Chhattisgarh
+
+cat state.txt | cut -d ' ' -f 1 | sort -r
+
+cat state.txt | head -n 3 | cut -d ' ' -f 1 > list.txt
+
+
+cat >sai.txt -> create a file , enter the text and press ctrl+d
+cat sai.txt
+cat sai1.txt sai2.txt -> display content of both the files
+cat >>sai.txt ->appending data to already created file
+cat -n sai.txt ->view contents of a file preceding with line numbers. 
+cat [filename-whose-contents-is-to-be-copied] > [destination-filename] -> Copy the contents of one file to another file. 
+cat -s sai.txt -> suppress emty lines in output
+cat file1.txt >> file2.txt >Cat command can append the contents of one file to the end of another file. 
+tac file1 ->Cat command can display content in reverse order using tac command. 
+cat -E file1.txt -> Cat command can highlight the end of line. 
+cat f1 f2 f3 > file ->Cat command to merge the contents of multiple files. 
+cat *.txt ->Cat command to display the content of all text files in the folder. 
+
+ls -> list files and directories
+ls -l -> long list
+ls -a  -> to view the hidden files
+ls -a -l / ls -al
+ls -F -> to distinguish the directory, * for executable file
+ls -r -> reverse display
+ls -R -> subdirectories
+ls -lS -> displays file size in order, will display big in size first.
+ls -l directory_name -> display files in that directory
+ls file_name -> to know if file is there
+ls ?.* -> display the file having name single char
+ls ?.txt
+ls ?.doc
+ls a* -> display files that starts with 'a'
+ls *.txt -> anyfile with txt extension
+ls [a-z]*.* -> any file starting with char
+ls -t -> sorts the file by modification time, showing the last edited file first
+ls -t | head -1 -> shows last edited file
+ls -1 -> display one file per line, ls -2
+ls -lh -> Display File Size in Human Readable Format
+ls -l/etc -> details of directories content
+ls -ld /etc ->details/information of the directory itself
+ls -lt
+ls -ltr ->showing the last edited file in the last line which will be handy when the listing goes beyond a page
+ls -A -> To show the hidden files, but not the ‘.’ (current directory) and ‘..’ (parent directory).
+ls ip_* -> files that start with ip_
+ls -b a* -> the -b (escape) option to allow you to see what the file name actually contains.
+ls --hide=*.txt -> The “.txt” files are not included in the second listing,ignoring
+ls -n ->the user ID and group ID displayed instead of the user name and group name, use the -n (numeric uid and gid) option.
+ls -X -> to sort by extension
+ls -l -h  -S r -> The listing is now ordered from the smallest file to the largest file.
+ls -i -> to see inode number of file
+ls --full-time ->file full timestamp
+ls -F
+/: A directory.
+@: A symlink.
+|: A named pipe.
+=: A socket.
+*: An executable files
+
+
+touch .file1 -> creates file1 as hidden, hidden file creation
+touch f1 f1 -> creates multiple files
+
+mkdir dir1 -> creates directory name dir1
+mkdir  dir2/dir3/dir4 -> create directory inside another directory in a single shot(if dir2,dir3 exists), several directories at once
+mkdir -p dir1/dir2 (creates both if dir1 and dir2 if dir1-parent does not exists)
+mkdir d1 d2 d3 -> create multiple directories at once
+mkdir .dir5 -> to create hidden directory
+
+cd ..  ->  go back to one level or parent directory
+cd /testdir1/testdir2/testdir3 -> changing directory
+pwd  ->  it prints present directory
+cd ~    ->  Move to users home directory from anywhere.
+cd ../../.. -> back to 3 levels
+
+
+rmdir dir1-> This command is used to remove specified directory - (empty directory)
+rmdir -p dir1/dir2 ->  remove both parent and child directory
+rmdir -pv -> Removes all the parent and subdirectories along with the verbose
+
+rm -rf dir1 / rm -rf file1 -> removes even non empty file and directory
+rm -rp -> removes non empty direcoty including parent and sub directory
+rm -r -> removes empty directories
+rm -rf * -> to delete all the files
+
+hostname -i -> provides the ip address of the host
+
+
+Command	Description
+echo $VARIABLE	To display value of a variable
+env	Displays all environment variables
+VARIABLE_NAME= variable_value	Create a new variable
+unset	Remove a variable
+export Variable=value	To set value of an environment variable
+
+
+yum install httpd -y -> install apache daemon
+yum remove httpd
+yum update httpd
+yum install tree -y
+
+service httpd start
+service httpd status
+service httpd stop
+
+ckconfig httpd on -> atomatically on the service after every restart or reboot
+ckconfig httpd off
+
+
+which java
+which tree python
+
+
+echo "hello"
+echo "hello" >file1 -> file1 created and hello written
+echo >f1 -> used to empty file
+
+
+grep [-option] searching_string filename
+
+-i --> ignores case sensitiveness in search pattern
+-n --> displays line number along with matched pattern
+-c --> no. of times search pattern exists basically returns the no of lines that contains the pattern
+-v --> displays line that does not match with pattern
+-l --> displays file name that matches the pattern
+-w --> match whole word
+-o --> Print only the matched parts of a matching line.Print only the matched parts of a matching line,
+ with each such part on a separate output line.
+\ --> Ignores the special meaning of the character following it
+*: zero or more occurrences of the previous character
+-h --> displays all the matching lines
+^ --> displays the lines that start with the given pattern
+$ --> displays the lines that ends with the given pattern 
+? --> Matches up exactly one character
+{n}	Matches the preceding character appearing ‘n’ times exactly
+{n,m}	Matches the preceding character appearing ‘n’ times but not more than m
+{n, }	Matches the preceding character only when it appears ‘n’ times or more
+\+	Matches one or more occurrence of the previous character
+\?	Matches zero or one occurrence of the previous character
+. replaces any character
+
+
+grep root /etc/passwd -> search root in specified path
+grep chennai file1
+grep "Chennai" file2 -> searches 'Chennai' in file2
+grep -i chennai file1
+grep '^D' file1 -> starts with D
+grep 'nai$' file1 -> ends with nai
+grep [ABCD] file1 -> search for the lines that contains A to D
+grep -e 'Delhi' -e 'Chennai' file1 -> search for multiple patterns
+cat file2 | grep 'chennai'
+ls file1 | grep '^f'
+grep -l "unix" * --> display the files that contains the given string/pattern. 
+grep -w "chennai" file1 -> search for the whole word
+By default, grep displays the entire line which has the matched string. We can make the grep to display only the matched string by using the -o option. 
+grep -o 'chennai' file1 => matched words
+grep -iR geeks /home/geeks -> Search recursively for a pattern in the directory:
+ls –l |grep  “^d”  -> displays directories
+ls –l |grep  “^-”  -> displays files 
+grep 'De..i' file1 -> Matches any one character
+grep  “^[^a-z A-Z]”  filename -->  Search lines beginning with an non-alphabetic character
+grep "S\.K\.Kumar" file.txt -->  It specifies the search pattern as  S.K.Kumar
+grep "[aA]gg*[ar][ar]wal" file.txt
+grep -e “[a-zA-Z0-9._-]\+@[a-zA-Z]\+.[a-zA-Z]\+”  emails_file.txt
+grep -l "is" * -> displays all the files that contains the 'is'
+cat sample | grep -E p\{2} ->the character ‘p’ appears exactly 2 times in a string one after the other eg: apple
+
+sort number.txt -> display content of file in sorted order
+sort number.txt > new.txt -> sorted content of file written into new.txt
+sort f1 f2 -> combines the data from file1 and file2 and sort it
+sort -r num.txt -> sort the data in reverse order
+
+cp [flag] sorce destination
+
+–p  preserve: keeps the same attributes, like creation date and file permissions, sudo user
+–u update: copy only if source is newer than destination
+-v verbose --> to explain what is being done
+-i interactive
+-f force
+
+cp file1 file2 -> copy content from file1 to file2 (file2 will be created and copied, incase of already created file content will be overwritten without warning)
+cp file1 file2 file3 dir -> copying multiples files to dir within the same directory (directory should be created and will not be created if not available)
+cp f1 f2 /home/ec2-user/dir2 -> f1 & f2 are available in dir1 and they are copied to dir2
+cp -R /home/ec2-user/dir1 /home/ec2-user/dir3 ->dir1 is created under dir3
+
+p behavior depend upon whether Dest_directory is exist or not. If the Dest_directory doesn’t exist, cp creates it and copies content of Src_directory recursively as it is.
+ But if Dest_directory exists then copy of Src_directory becomes sub-directory under Dest_directory.
+
+cp -i file1 file2 -> interactive copying,system first warns the user before overwriting the destination file.
+cp -b file1 file5 -> creates the backup file5~ of the destination file in the same folder with the different name and in different format.
+cp -f file1 file6 -> force , If the system is unable to open destination file for writing operation because the user doesn’t have writing permission for this file then by using -f option with cp command, destination file is deleted first and then copying of content is done from source to destination file
+cp *.txt dir1 -> using wildcard to copy
+cp  /home/ec2-user/dir1/t2.txt /home/ec2-user/dir6/t4.txt --> copy without having to change directories
+cp /pictures/*.jpg /new_directory
+cp --backup=numbered t2.txt dir -> everytime when a change is made it is backed up with backup file with number
+cp -u file1 file2
+cp -r dir* newdir -> directories starting with dir are copied
+cp -r /home/ec2-user/dir* /home/ec2-user/newdir -> copies only dir
+cp -v file1 file2 -->  ‘file1’ -> ‘file2’
+cp  /home/ec2-user/dir1/* /home/ec2-user/dir6 -> will copy only files from dir to dir6 (dir6 should be created)
+cp will not copy directories unless explicitly told to do so (with --recursive for example, see man cp).
+
+
+rsync is a tool that compares directories when copying and is a much more efficient way of backing up data on a regular basis. It will compare any changes or differences with the source directory and the repository and then only transfer those differences.
+
+cp on the other hand, copies everything every time - no comparison, just a direct copying of everything you've specified. Good for a one-time backup, but not on a regular basis, especially across a network, as you will be transferring a lot of data each time, as the data grows in size.
+
+rsync will only transfer the changes each time - cp copies everything everytime.
+
+mv [flag] cut_file paste_file
+
+-i (Interactive) -> overwrite an existing file
+-f (Force) -> mv prompts for confirmation overwriting the destination file if a file is write-protected.
+-n (no-clobber): With -n option, mv prevent an existing file from being overwritten. MOVE WHILE NOT OVERWRITE AN EXISTING FILE
+-b(backup): With this option, it is easier to take a backup of an existing file that will be overwritten as a result of the mv command. This will create a backup file with the tilde character(~) appended to it. Backup file willl have same name as thatb of destination
+–version: This option is used to display the version of mv which is currently running on your system. 
+-u : move only if source is newer than destination
+-v verbose : output information explaining what is exactly doing
+
+mv f1 file1 -> f1 will be deleted, file1 created ..If the destination file doesn’t exist, it will be created,If the destination file exist, then it will be overwrite and the source file will be deleted. By default, mv doesn’t prompt for overwriting the existing file, So be careful !! 
+mv -n f2 file2 -> file2 will not be overriden if already exists 
+mv --version
+mv f1 /home/ec2-user/dir1 -> move file from current directory to another directory
+mv /home/ec2-user/mdir1 /home/ec2-user/mdir2 -> renaming the directory
+mv f1 f2 f3 dir3 -> move multiple files to another directory
+mv f1 f2 -> ~f2 backup file will be created
+mv * /home/ec2-user/mdir3 ->mdir3 will be created if not exist, all files moved  
+mv  /home/ec2-user/mdir3/* /home/ec2-user/mdir5
+mv --suffix=.bak f1 f2 -> f2  f2.bak , back up of f2 will be created, backup of destination before overwriting
+mv -u d1/* d2--> move only file that does not exist in the destination
+$ ls d2
+f1  f2
+$ ls d1
+f1  f2  f3
+$ mv -u d1/* d2
+$ ls d2
+f1  f2  f3
+$ ls d1
+f1  f2
+
+useradd priya -> first login as root user (sudo su), then create user
+cat /etc/passwd -> to check if the user is created
+
+group team1 -> to create group
+cat /etc/group -> to check if the group is created
+
+gpasswd -a priya team1 -> to add the already created user into the group, -a denoted single user
+gpasswd -M ajay,sam,divya team1 -> to add multiple users
+
+
+ln -s file1 softfile1 -> create softlink for file1 as softfile1
+ls -l -> to know if softlist is created, softfile1>file1
+ln file2 backupfile2 -> hardlink is used for synchronisation of the file, even if we delete original file the backup file will be available
+whatever added to file2 will be added in backupfile2 aswell
+
+
+tar -cvf dirx.tar dirx ->dirx.tar is the tar one which will be created and use ls to view
+c- create, v-verbose, f- forcefully
+
+gzip dirx.tar -> zipping the tar file and by giving ls you can see the zipped file, dirx.tar.gz
+gunzip dirx.tar.gz -> to unzip
+
+
+tar -xvf dirx.tar -> to extract the tar file and we get the dirx directory
+-x -> extract
+
+wget <URL> -> download the file with the help of URL
+
+
+
+curl [option] [url]
+
+sudo yum install curl
+curl --version
+curl https://www.google.com --> get the content of the URL of the website on the Linux terminal, can see the HTML code of that specific website
+curl https://ubuntu.com/download/desktop
+
+curl -o test1.html https://www.google.com -->  save the content of any website in a file,specify the name of the file and it is then automatically created and saved. in the command
+curl https://yoururl.com > yoururl.html -->save url output to file
+
+This is a progress meter. It shows the amount of data that is transmitted. The speed of transferring and the time also.
+
+curl -s -o test2.html https://www.google.com --> quiet mode without progress bar
+
+curl -O https://ubuntu.com/download/desktop -->>  save the file with the name of the default website
+
+curl -C - -o desktop1 https://ubuntu.com/download/desktop  --> If the download process of any file in your system has been stopped, it can be resumed by using the curl command. This helps in the situation when you are trying to download large files, but it is interrupted because of any reason.
+
+curl -L google.com --> -L follow 302 redirect, Curl command does not follow the HTTP location header by default. These are also known as redirects. When a website request is sent to another place, then it’s original, then the HTTP location header is sent as a response.
+
+curl –I - -http2 https://linuxhint.com--> To fetch the headers of the URL
+curl -I http://localhost:8080
+
+
+curl --limit-rate 1000K -O ftp://speedtest.tele2.net/1MB.zip -->> allows  to restrict the rate of transferring the data
+curl –-limit-rate 2000B https://gf.dev
+
+xargs –n 1 curl –O < address.txt  ->  download the URL from the file
+cat address.txt
+https://linuxhint.com
+https://www.google.com[
+
+curl -u demo:password -O ftp://test.rebex.net/readme.txt --> download files from user authenticated FTP servers. 
+curl --data "log=shanmuga-priya.balasubramanian@socgen.com&pwd=Intel@123" https://intellipaat.com/signin/
+
+curl -O <URL1> <URL2> --> download multiple files
+
+curl helloitdoesntexist.com -> verify if we can connect to URL
+
+curl --proxy yourproxy:port https://yoururl.com --> working on the DMZ server where you need to connect to the external world using a proxy.
+
+curl --head https://www.google.com --> display on response header
+
+curl --insecure https://yoururl.com --> can instruct cURL to ignore the cert error with --insecure flag
+
+
+
+ps -- display current/all running process in unix/linux system
+
+PID -> process id
+TTY- > terminal in which process is running
+TIME -> how much time process is utilising CPU
+CMD -> cmd for which process got executed
+
+
+create shell script : mytest.sh
+
+echo 'Test is started'
+echo 'Testing'
+sleep 100
+exit 0
+
+execute shell script  : sh mytest.sh
+Forcefully teminate : ctrl+c
+ps
+
+
+Run same script as background : sh mytest.sh &
+Forcefully teminate : ctrl+c
+
+ps -> currently running process in that shell/terminal
+
+ps -aux --> all running process in BSD format like memory, current cpu usage in %, memory in %, VSZ-size of virtual memory, RSS - size of resident pool
+
+ps -f --> Gives complete details/full format, USER, PID, PPID, C, STIME,TTY,TIME, CMD
+
+ps -e / ps -A --> displays all the internal processes which are running by unix/linux
+
+ps -ef
+
+ps -f | grep 'myscript.sh' display process having specific name
+ps -f | grep 'nginx'
+
+ps -u priya --> finding process started by user / process of specific user
+
+ps -G <group name> --> process started by group
+
+ps -t <terminal> : ps -t pts/1--> list processes associated with terminal
+
+ps -T --> all process associated with this terminal
+
+ps -p <pid> --> list process with process id
+
+ps -r --> view all running process
+
+ps -x --> all process owned by current user
+
+ps -o <col name>
+
+pstree --> show process in hierarchy
+
+ps aux --sort=-%mem | head --> top 10 process that using the most memory:
+
+ps -C bash -> view process running with specific command
+ps -C grep
+
+ps -f -p <pid1>,<pid2>,<pid3> -> process infrmation of specific pid
+
+ps -ejH -> to see process tree (process and subprocess)
+ 
+kill <process id> terminate the process that is running in the backend
+
+kill -9 <pid1> <pid2> <pid3> kill multiple process in a single go in forceful way
+
+vi data -> contails below data
+
+--
+ID Name Salary Country
+1 Pol 25000 India
+2 Bont 45000 Belgium
+3 Loki 55000 Germany
+4 Hina 35000 India
+--
+sed '' filename
+sed -n '3p' data --> to print 3rd line in the file
+$ -> represents the last line
+sed -n '$p' data --> to print the last line
+sed -n '3,5p'data --> to print range of lines, from 3rd to 5th line including
+
+-n :disables the automatic printing
+https://superuser.com/questions/852404/what-does-n-option-in-sed-do
+
+sed -n '/India/p' data --> displays the row containing India
+
+-e : used in sed to run multiple commands/options/expressions,-e tells sed to execute the next command line argument as sed program
+
+sed -n -e '2p' -e '4p' data --> displays only 2nd and 4th line
+sed -n -e '/India/p' -e '/Germany/p' data --> display row having India and Germany
+
+sed -n '2,+2p' data --> start from 2nd line and display the next 2 lines
+
+sed -n '1~2p' data --> start from 1st line and print alternative line (1, 3, 5)
+
+vi ex_file
+cat ex_file
+--
+1p
+3p
+5p
+--
+
+sed command to use the expressions given in the file
+
+- f--> for reading the file
+
+sed -n -f ex_file data -> sed command with expression in the file
+
+-s --> used for substitute, or replacing a text in a file
+sed 's/old_string/new_string/' filename.txt
+-g --> global, which means that all matching occurrences in the line would be replaced.
+
+sed 's/Pol/Paul/g' data --> replace all occurance of Pol to Paul
+sed 's/India/China/' --> replace first occurance of India in each line to China
+
+sed '5 s/India/US/g' data --> relace the India in 5TH line to US
+
+sed '5! s/India/US/g' data --> relace the India to US other than 5th line
+
+-i --> to insert in the file, edit files in place meaning to save the changes done in file
+
+sed -i '5 s/India/USA/g' data --> the file will be edited and save
+
+sed '/Bont/ s/Belgium/Paris/g' data --> Replace Belgium to Paris if it is for Bont
+sed '/Pol/ s/25000/85000/g' data --> change the salary of Pol
+
+-d --> used to delete the line
+
+sed '1d' data --> delete first line  
+
+sed '$d' data --> delete last line
+
+sed '2,4d' data --> delete 2 3 4 lines
+
+sed '/Belgium/d' data --> delete the user line which has Belgium
+
+sed '/^$/d' data --> delete empty lines
+
+w -> write data into new file, write the pattern space data to a new file
+
+sed '/India/ w IndianUsers' data -> Search for the String India, the entire line will be written into new file IndianUsers(create+write)
+
+-a --> append the data
+
+sed '3 a Hello User' data --> Append Hello User next to 3rd line
+
+sed '1 i OmSaiRam' data --> insert text before the first line rather than append it after
+
+sed '1 i\
+your_text' your_file
+
+sed '/Germany/ a Europe' data --> Append Hello User next to Germany
+sed '/Germany/ i Europe' data --> Append Hello User before to Germany
+
+-c --> change the line
+
+sed '4 c Hello User' data -> Change the 4th line to Hello User
+
+sed -n 'l' data -> to display the hidden char, $ represents end of line
+
+sed -n 'l 20' data --> display 20 char in each line
+
+-r --> read the file
+
+cat externalFile
+This is from External
+
+sed '3 r externalFile' data --> copy the data from external file and put it in 3rd line in data file
+
+q --> quit
+
+sed '/India/ q' data --> quit as soon as first match of India is found in the file
+
+e --> to add expression, like date
+
+sed ' 2 e date' data --> to add current date to 2nd line
+
+sed '2 e pwd' data --> to add pwd to second line
+
+sed "=" data --> to display with line numbers
+
+cat names
+Olivia
+Emma
+Ava
+Sophia
+Isabella
+Liam
+Noah
+Oliver
+William
+Elijah
+
+sed -n '/^N/p' names -> to display names starting with N
+
+sed -n '/a$/p' names --> print names end with 'a'
+
+sed -n '/[AC]/p' names --> starting with AC
+
+sed -n '/[A-D]/p' names --> names starting from A-D
+
+ls -ltr *.txt -> to display .txt files
+
+ls -ltr ex* ->files starting with ex
+
+cat names
+Olivia
+Emma
+Ava
+Sophia
+Isabella
+Liam
+Noah
+Oliver
+William
+Elijah
+12
+6644
+ass4444
+ggg5
+
+sed -n '/[[:digit:]]/p' names -> display lines which has digit
+
+sed -n '/[[:upper:]]/p' names -> displays lines that has upper char
+
+sed -n '/[[:lower:]]/p' names -> displays lines that has lower char
+
+sed -n '/[[:space:]]/p' names -> displays lines that has space between words
+
+sed -n '/[[:punct:]]/p' names -> displays lines that has punct marks
+
+sed -n '/[[:alpha:]]/p' names -> displays lines that hs alpha
+
+1) want to remove the read permissions for the “other” users from files that have a “.page” extension.
+
+chmod o-r *.page
+
+If we had wanted to include files in subdirectories, we could have used the -R (recursive) option.
+
+
+chmod -R o-r *.page
+
+2) combining lists of items from multiple files and you want them alphabetized in the combined file, you can sort the combined items in the resulting file.
+
+cat f1 f2 f3 | sort > file 
+
+3) Display the directories first followed by file

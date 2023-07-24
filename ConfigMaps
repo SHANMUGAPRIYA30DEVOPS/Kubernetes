@@ -1,1 +1,92 @@
+$cd props (PROPERTIES FOLDER)
+$ls
+game.properties
+ui.properties
+(both are configuration files)
 
+cat game.properties
+---------------------
+color=blue
+env=real
+pass=ABC
+
+
+Create ConfigMap from these files
+---------------------------------
+
+kubectl create configmap <name-myconfig> --from-file=/props/game.properties
+
+kubectl get configmaps
+
+kubectl describe configmap myconfig
+
+Create ConfigMap for all files in the folder
+----------------------------------------------
+
+kubectl create configmap myconfig02 --from-file=.   (take all files from current folder)
+
+Create ConfigMap from literals
+-------------------------------
+
+kubectl create configmap myconfig03 --from-literal=mykey=myval --from-literal=myName=priya
+
+ConfigMap through Spec files
+-----------------------------
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfig04
+data:
+  game.properties: |-
+	color=blue
+	env=real
+	pass=ABC
+	
+
+Using ConfigMap in pods / injecting configmap into pods (passing through env variables)
+-------------------------------------------------------
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mycon 
+    image: busybox
+	command: [ 'sh', '-c', 'echo $(MY_VAL)']
+	env:
+	- name: MY_VAL
+	  valueFrom:
+	    configMapKeyRef:
+		  name: myconfig03
+		  key: myName
+		  
+
+kubectl logs mypod
+
+Mounting ConfigMap as volume
+-----------------------------
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mycon 
+    image: busybox
+	command: [ 'sh', '-c', 'echo $(MY_VAL)']
+	volumeMounts:
+	- name: myvol
+	  mountPath: /etc/config
+  volumes:
+  - name: myvol
+    configMap:
+	  name: myconfig03
+  
+  
+kubectl exec -it mypod -- /bin/bash
+
+ls /etc/config

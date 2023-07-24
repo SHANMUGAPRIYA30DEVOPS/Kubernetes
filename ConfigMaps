@@ -90,3 +90,20 @@ spec:
 kubectl exec -it mypod -- /bin/bash
 
 ls /etc/config
+
+Load whole ConfigMap as environment variable
+---------------------------------------------
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mycon 
+    image: busybox
+	command: [ 'sh', '-c', 'echo $(MY_VAL)']
+	envFrom:
+	  -configMapRef:
+	    name: myconfig03
